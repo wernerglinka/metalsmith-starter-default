@@ -1,0 +1,12 @@
+{
+  "menu": [
+    {
+      "label": "Go Home",
+      "url": "/"
+    },
+    {
+      "label": "Other Page",
+      "url": "/other-page"
+    }
+  ]
+}

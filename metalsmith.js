@@ -8,6 +8,7 @@ const when = require('metalsmith-if');
 const htmlMinifier = require('metalsmith-html-minifier');
 const debugUI = require('metalsmith-debug-ui');
 const assets = require('metalsmith-assets');
+const metadata = require('metalsmith-metadata');
 const marked = require('marked');
 const Metalsmith = require('metalsmith');
 
@@ -55,17 +56,27 @@ metalsmith
   .clean(true)
   
   .use(when(isProduction, drafts()))
+
+  .use(metadata({
+    site: "data/site.json",
+    nav: "data/navigation.json"
+  }))
   
   .use(
     inPlace(templateConfig)
   )
 
+    /*
   .use(function plugin(files, metalsmith, done) {
+    console.log("running ms");
+  
     Object.keys(files).forEach(file => {
       console.log(files[file]);
     });
     done();
+    
   })
+  */
 
   .use(permalinks())
 
