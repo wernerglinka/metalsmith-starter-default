@@ -6,6 +6,8 @@ const drafts = require('@metalsmith/drafts');
 const permalinks = require('@metalsmith/permalinks');
 const when = require('metalsmith-if');
 const htmlMinifier = require('metalsmith-html-minifier');
+const debugUI = require('metalsmith-debug-ui');
+const assets = require('metalsmith-assets');
 const marked = require('marked');
 const Metalsmith = require('metalsmith');
 
@@ -46,7 +48,8 @@ const templateConfig = {
   },
 };
 
-Metalsmith(__dirname)
+const metalsmith = isProduction ? Metalsmith(__dirname) : debugUI.patch(Metalsmith(__dirname));
+metalsmith
   .source('./src/content')
   .destination('./build')
   .clean(true)
@@ -68,8 +71,15 @@ Metalsmith(__dirname)
 
   .use(
     layouts(templateConfig)
-  
-    )
+  )
+
+  .use(
+    assets({
+      source: './src/assets/',
+      destination: './assets/',
+    })
+  )
+
   .use(when(isProduction, htmlMinifier()))
   .build(err => {
     if (err) {
