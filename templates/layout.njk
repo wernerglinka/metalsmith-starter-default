@@ -1,22 +1,22 @@
-<!doctype html>
-<html class="no-js" lang="">
-
+<!DOCTYPE html>
+<html>
   <head>
-    {% include "partials/head.njk" %}
+    {% include "sections/head.njk" %}
   </head>
+</h1>
 
-  <body class="{{ bodyClass }}">
-    
-    {% include "partials/header.njk" %}
-    
-    <main>
+<body class={{ bodyClasses }}>
+  <div id="at-top"></div>
+  {% include "sections/header.njk" %}
+
+  <main id="swup" class="transition-fade">
     {% block body %}
-    {# will be replaced by page content #}
+      This is the default contents
     {% endblock %}
-    </main>
+  </main>
 
-    {% include "partials/footer.njk" %}
-    
-  </body>
-  
+  {% include "sections/footer.njk" %}
+  {% include "partials/scripts.njk" %}
+
+</body>
 </html>

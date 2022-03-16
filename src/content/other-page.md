@@ -1,6 +1,6 @@
 ---
 layout: simple.njk
-bodyClass: "other-page"
+bodyClasses: "other-page"
 
 seo:
   title: Metalsmith Bare-bones Starter

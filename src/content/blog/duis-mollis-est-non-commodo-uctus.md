@@ -1,6 +1,6 @@
 ---
 layout: blog-post.njk
-bodyClass: "blog-post"
+bodyClasses: "blog blog-post"
 
 seo:
   title: Duis mollis, est non commodo luctus

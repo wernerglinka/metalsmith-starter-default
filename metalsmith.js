@@ -6,6 +6,8 @@ const layouts = require("@metalsmith/layouts");
 const collections = require("@metalsmith/collections");
 const drafts = require("@metalsmith/drafts");
 const permalinks = require("@metalsmith/permalinks");
+const sass = require("@metalsmith/sass");
+const postcss = require("@metalsmith/postcss");
 const when = require("metalsmith-if");
 const htmlMinifier = require("metalsmith-html-minifier");
 const assets = require("metalsmith-assets");
@@ -24,7 +26,7 @@ const condenseTitle = string => string.toLowerCase().replace(/\s+/g, "");
 const UTCdate = date => date.toUTCString("M d, yyyy");
 const blogDate = string => new Date(string).toLocaleString("en-US", { year: "numeric", month: "long", day: "numeric" });
 const trimSlashes = string => string.replace(/(^\/)|(\/$)/g, "");
-const md = mdString => {
+const mdToHTML = mdString => {
   try {
     return marked.parse(mdString);
   } catch (e) {
@@ -45,7 +47,7 @@ const templateConfig = {
       UTCdate,
       blogDate,
       trimSlashes,
-      md,
+      mdToHTML,
     },
   },
 };
@@ -98,6 +100,15 @@ Metalsmith(__dirname)
       destination: "./assets/",
     })
   )
+
+  .use(
+    sass({
+      entries: {
+        "src/sass/styles.scss": "assets/styles.css",
+      },
+    })
+  )
+  .use(postcss({ plugins: ["postcss-preset-env", "autoprefixer", "cssnano"], map: !isProduction }))
 
   .use(when(isProduction, htmlMinifier()))
   .build(err => {
