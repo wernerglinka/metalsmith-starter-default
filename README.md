@@ -4,10 +4,10 @@
   </a>
 </p>
 <h1 align="center">
-  Metalsmith bare-bones starter
+  Metalsmith blog starter
 </h1>
 
-Start off your Metalsmith journey with this bare-bones boilerplate. This starter includes Markdown content and Nunjucks templating. 
+Start off your Metalsmith journey with this blog boilerplate. This starter includes Markdown content and Nunjucks templating. 
 
 ## Quick start
 

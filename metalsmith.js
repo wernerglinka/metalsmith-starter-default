@@ -1,42 +1,43 @@
 /* eslint-disable import/no-extraneous-dependencies */
 
-const inPlace = require('@metalsmith/in-place');
-const layouts = require('@metalsmith/layouts');
-const drafts = require('@metalsmith/drafts');
-const permalinks = require('@metalsmith/permalinks');
-const when = require('metalsmith-if');
-const htmlMinifier = require('metalsmith-html-minifier');
-const debugUI = require('metalsmith-debug-ui');
-const assets = require('metalsmith-assets');
-const metadata = require('metalsmith-metadata');
-const marked = require('marked');
-const Metalsmith = require('metalsmith');
+const Metalsmith = require("metalsmith");
+const markdown = require("@metalsmith/markdown");
+const layouts = require("@metalsmith/layouts");
+const collections = require("@metalsmith/collections");
+const drafts = require("@metalsmith/drafts");
+const permalinks = require("@metalsmith/permalinks");
+const when = require("metalsmith-if");
+const htmlMinifier = require("metalsmith-html-minifier");
+const assets = require("metalsmith-assets");
+const metadata = require("metalsmith-metadata");
+const prism = require("metalsmith-prism");
 
-const nodeVersion = process.version;
-const isProduction = process.env.NODE_ENV === 'production';
+const marked = require("marked");
+
+const { dependencies } = require("./package.json");
+const isProduction = process.env.NODE_ENV === "production";
 
 // functions to extend Nunjucks environment
 const toUpper = string => string.toUpperCase();
-const spaceToDash = string => string.replace(/\s+/g, '-');
-const condenseTitle = string => string.toLowerCase().replace(/\s+/g, '');
+const spaceToDash = string => string.replace(/\s+/g, "-");
+const condenseTitle = string => string.toLowerCase().replace(/\s+/g, "");
 const UTCdate = date => date.toUTCString("M d, yyyy");
-const blogDate = date => date.toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+const blogDate = string => new Date(string).toLocaleString("en-US", { year: "numeric", month: "long", day: "numeric" });
 const trimSlashes = string => string.replace(/(^\/)|(\/$)/g, "");
-const md = (mdString) => {
+const md = mdString => {
   try {
     return marked.parse(mdString);
   } catch (e) {
-    console.error('Error parsing markdown:', e);
+    console.error("Error parsing markdown:", e);
     return mdString;
   }
-}
+};
 
 // Define engine options for the inplace and layouts plugins
 const templateConfig = {
   directory: "templates",
   engineOptions: {
-    smartypants: true,
-    smartLists: true,
+    path: ["templates"],
     filters: {
       toUpper,
       spaceToDash,
@@ -45,49 +46,56 @@ const templateConfig = {
       blogDate,
       trimSlashes,
       md,
-    }
+    },
   },
 };
 
-const metalsmith = isProduction ? Metalsmith(__dirname) : debugUI.patch(Metalsmith(__dirname));
-metalsmith
-  .source('./src/content')
-  .destination('./build')
+Metalsmith(__dirname)
+  .source("./src/content")
+  .destination("./build")
   .clean(true)
-  
+  .metadata({
+    msVersion: dependencies.metalsmith,
+    nodeVersion: process.version,
+  })
+
   .use(when(isProduction, drafts()))
 
-  .use(metadata({
-    site: "data/site.json",
-    nav: "data/navigation.json"
-  }))
-  
   .use(
-    inPlace(templateConfig)
+    metadata({
+      site: "data/site.json",
+      nav: "data/navigation.json",
+    })
   )
 
-    /*
-  .use(function plugin(files, metalsmith, done) {
-    console.log("running ms");
-  
-    Object.keys(files).forEach(file => {
-      console.log(files[file]);
-    });
-    done();
-    
-  })
-  */
+  .use(
+    collections({
+      blog: {
+        pattern: "blog/*.md",
+        sortBy: "date",
+        reverse: true,
+        limit: 10,
+      },
+    })
+  )
+
+  .use(markdown())
 
   .use(permalinks())
 
+  .use(layouts(templateConfig))
+
   .use(
-    layouts(templateConfig)
+    prism({
+      lineNumbers: true,
+      decode: true,
+    })
   )
 
   .use(
     assets({
-      source: './src/assets/',
-      destination: './assets/',
+      source: "./src/assets/",
+      destination: "./assets/",
     })
   )
 
