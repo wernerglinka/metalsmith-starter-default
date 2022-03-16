@@ -142,3 +142,23 @@ blockquote {
   padding: 20px;
   margin: 0;
 }
+
+.gitter-invite {
+  text-decoration: none;
+  margin-top: 50px;
+  display: block;
+}
+.gitter-invite p {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  background-color: #f8f8f8;
+}
+
+
+.gitter-invite img {
+  width: 40px;
+  display: inline-block;
+  margin: 0 10px;
+}
